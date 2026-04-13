@@ -1,0 +1,42 @@
+# ============================================================
+# PanicGuard AI — Requirements (pinned for Streamlit Cloud)
+# ============================================================
+
+# --- Core Web Framework ---
+streamlit==1.56.0
+
+# --- Data & Market Feeds ---
+yfinance==1.2.2
+mftool==3.2
+pandas==3.0.2
+numpy==2.4.3
+requests==2.31.0
+
+# --- Machine Learning ---
+xgboost==3.2.0
+scikit-learn==1.8.0
+imbalanced-learn==0.14.1          # SMOTE for class imbalance
+
+# --- Explainability ---
+shap==0.51.0
+
+# --- LLM / AI APIs ---
+anthropic==0.94.1                 # Claude API (Behavioral Coach)
+openai==2.31.0                    # OpenAI GPT-4o fallback
+
+# --- Visualization ---
+plotly==6.7.0
+matplotlib==3.10.8
+seaborn>=0.13.0
+
+# --- Environment & Config ---
+python-dotenv==1.0.1
+
+# --- Utilities ---
+scipy==1.17.1
+joblib==1.5.3                     # Model serialization
+tqdm==4.67.3                      # Progress bars
+
+# --- Development & Testing ---
+pytest==9.0.3
+pytest-cov==7.1.0

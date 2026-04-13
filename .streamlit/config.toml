@@ -1,0 +1,17 @@
+# Streamlit Cloud deployment configuration
+# Place this file at .streamlit/config.toml in your repo root
+
+[theme]
+base = "dark"
+primaryColor = "#8b5cf6"
+backgroundColor = "#0f0c29"
+secondaryBackgroundColor = "#1a1633"
+textColor = "#f0f0f0"
+font = "sans serif"
+
+[server]
+maxUploadSize = 10
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false

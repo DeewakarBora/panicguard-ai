@@ -1,0 +1,86 @@
+# ============================================================
+# PanicGuard AI — .gitignore
+# ============================================================
+
+# --- Environment & Secrets ---
+.env
+*.env
+secrets.toml
+.streamlit/secrets.toml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# --- Distribution / Packaging ---
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# --- Testing & Coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.coveragerc
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Windows ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- ML Models & Data ---
+models/saved_models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+data/raw/
+data/processed/
+data/cache/
+
+# --- Streamlit Cache ---
+.streamlit/cache/
+
+# --- shap output ---
+shap_plots/
+
+# --- Temporary Files ---
+*.tmp
+*.bak
+*.swp
+*~

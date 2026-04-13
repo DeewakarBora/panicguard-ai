@@ -1,0 +1,32 @@
+[
+  {
+    "event": "COVID-19 Crash (2020)",
+    "detected": true,
+    "peak_panic_score": 100.0,
+    "peak_score_date": "2020-03-19",
+    "first_alert_date": "2020-03-12",
+    "lead_time_days": 11,
+    "hold_gain_pct": 112.0,
+    "sell_loss_pct": -15.0
+  },
+  {
+    "event": "Russia-Ukraine Selloff (2022)",
+    "detected": false,
+    "peak_panic_score": 0.4,
+    "peak_score_date": "2022-02-24",
+    "first_alert_date": "N/A",
+    "lead_time_days": 0,
+    "hold_gain_pct": 28.0,
+    "sell_loss_pct": -10.0
+  },
+  {
+    "event": "April 2026 Tariff Crash",
+    "detected": false,
+    "peak_panic_score": 0.1,
+    "peak_score_date": "2026-03-04",
+    "first_alert_date": "N/A",
+    "lead_time_days": 0,
+    "hold_gain_pct": null,
+    "sell_loss_pct": -12.0
+  }
+]
