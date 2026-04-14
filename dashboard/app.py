@@ -186,6 +186,7 @@ div[data-testid="stSidebar"] { background:linear-gradient(180deg,#0e1a2e 0%,#0a1
 
 .info-banner { background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.20); border-radius:10px; padding:10px 18px; font-size:0.78rem; color:#93c5fd; text-align:center; margin-bottom:12px; }
 .citation { font-size:0.68rem; color:#64748b; font-style:italic; }
+.section-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(30,58,95,0.60),transparent); margin:32px 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -467,18 +468,23 @@ def render_header():
         <div style="padding:8px 0;">
             <span style="font-size:2.2rem; font-weight:900; color:#f0f0f0;">🛡️ PanicGuard AI</span>
             <span style="font-size:0.95rem; color:#94a3b8; margin-left:16px; font-weight:400;">
-                Don't let fear destroy your wealth
+                Your calm in the market storm
             </span>
         </div>
         """, unsafe_allow_html=True)
     with h2:
         now = datetime.now()
         dot = "\U0001f7e2" if pan_score < 60 else ("\U0001f7e1" if pan_score < 80 else "\U0001f534")
-        badge = "DEMO DATA" if is_demo else "LIVE"
+        badge_label = "Sample Analysis" if is_demo else "Live"
+        badge_style = ("background:rgba(100,116,139,0.18); color:#94a3b8; border:1px solid rgba(100,116,139,0.35);"
+                       "padding:3px 12px; border-radius:50px; font-size:0.75rem; font-weight:500;"
+                       if is_demo else
+                       "background:rgba(16,185,129,0.18); color:#10b981; border:1px solid rgba(16,185,129,0.35);"
+                       "padding:3px 12px; border-radius:50px; font-size:0.75rem; font-weight:500;")
         st.markdown(f"""
         <div style="text-align:right; padding:12px 0;">
-            <div style="font-size:0.82rem; color:#94a3b8;">{dot} {badge} &nbsp;·&nbsp; {now.strftime("%d %b %Y, %I:%M %p")}</div>
-            <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">Powered by ML + Behavioral Finance</div>
+            <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:6px;">{dot} {now.strftime("%d %b %Y, %I:%M %p")}</div>
+            <span style="{badge_style}">{badge_label}</span>
         </div>""", unsafe_allow_html=True)
 
 render_header()
@@ -527,6 +533,7 @@ def render_panic_score():
         st.markdown("</div>", unsafe_allow_html=True)
 
 render_panic_score()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
@@ -569,6 +576,7 @@ def render_market():
         </div>""", unsafe_allow_html=True)
 
 render_market()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
@@ -635,6 +643,7 @@ def render_portfolio():
         </div>""", unsafe_allow_html=True)
 
 render_portfolio()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
@@ -696,6 +705,7 @@ def render_scenarios():
                     font-weight:500; padding:8px 20px; line-height:1.6;">{headline}</div>""", unsafe_allow_html=True)
 
 render_scenarios()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
@@ -746,6 +756,7 @@ def render_coach():
             st.markdown("</div>", unsafe_allow_html=True)
 
 render_coach()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ── Chat Interface (ISSUE 5: persists in session state) ────────────────
@@ -771,9 +782,6 @@ def render_chat():
             st.markdown(f'<div class="chat-user">\U0001f64b {msg_item["content"]}</div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-ai">\U0001f6e1\ufe0f {msg_item["content"]}</div>', unsafe_allow_html=True)
-
-render_chat()
-
 
 # ╔══════════════════════════════════════════════════════════════════════╗
 # ║  § 6  HISTORICAL PROOF                                              ║
@@ -833,6 +841,7 @@ def render_history():
         Historical crash data: BSE/NSE archives</span></div>""", unsafe_allow_html=True)
 
 render_history()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
@@ -888,6 +897,9 @@ def render_shap():
             st.markdown("</div>", unsafe_allow_html=True)
 
 render_shap()
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+render_chat()
 
 
 # ╔══════════════════════════════════════════════════════════════════════╗
