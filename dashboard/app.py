@@ -108,8 +108,7 @@ RISK_COLOR = {"LOW": _COLORS["green"], "MEDIUM": _COLORS["yellow"],
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
-html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; }
 .stApp { background: linear-gradient(160deg, #0a1628 0%, #0e1a2e 40%, #0a1628 100%) !important; }
 #MainMenu, footer, header { visibility: hidden; }
 
@@ -127,7 +126,7 @@ html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystem
     padding: 20px 22px; text-align: center;
 }
 .metric-label { font-size:0.78rem; font-weight:500; text-transform:uppercase; letter-spacing:1.2px; color:#94a3b8; margin-bottom:6px; }
-.metric-value { font-size:1.65rem; font-weight:700; color:#f1f5f9; font-family:'JetBrains Mono',monospace; }
+.metric-value { font-size:1.65rem; font-weight:700; color:#f1f5f9; font-variant-numeric:tabular-nums; }
 .metric-delta { font-size:0.82rem; font-weight:500; margin-top:4px; }
 .delta-up { color:#10b981; } .delta-down { color:#ef4444; }
 
@@ -142,7 +141,7 @@ html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystem
 .scenario-card.defense{ border-left: 3px solid #3b82f6; }
 .scenario-emoji { font-size:2rem; margin-bottom:6px; }
 .scenario-title { font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:10px; }
-.scenario-value { font-size:1.45rem; font-weight:800; font-family:'JetBrains Mono',monospace; }
+.scenario-value { font-size:1.45rem; font-weight:800; font-variant-numeric:tabular-nums; }
 .scenario-sub   { font-size:0.75rem; color:#94a3b8; margin-top:6px; }
 
 .gauge-wrapper { display:flex; flex-direction:column; align-items:center; padding:10px 0 0 0; }
@@ -154,7 +153,7 @@ html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystem
     display:inline-block; background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.32);
     color:#93c5fd; padding:6px 16px; border-radius:50px; font-size:0.78rem; font-weight:600; margin:4px 6px 4px 0;
 }
-.section-header { font-size:1.3rem; font-weight:700; color:#f1f5f9; margin-bottom:4px; padding-bottom:8px; border-bottom:1px solid rgba(30,58,95,0.80); }
+.section-header { font-size:1.3rem; font-weight:600; color:#f1f5f9; margin-bottom:4px; padding-bottom:8px; border-bottom:1px solid rgba(30,58,95,0.80); }
 .section-sub { font-size:0.82rem; color:#94a3b8; margin-bottom:20px; }
 
 .crash-table { width:100%; border-collapse:separate; border-spacing:0; font-size:0.82rem; }
@@ -173,7 +172,7 @@ html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystem
     background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25);
     border-radius:12px; padding:20px 24px; text-align:center;
 }
-.wd-amount { font-size:2.2rem; font-weight:900; color:#ef4444; font-family:'JetBrains Mono',monospace; }
+.wd-amount { font-size:2.2rem; font-weight:900; color:#ef4444; font-variant-numeric:tabular-nums; }
 .wd-label { font-size:0.88rem; font-weight:500; color:#fca5a5; margin-top:4px; }
 
 .chat-user { background:rgba(59,130,246,0.10); border:1px solid rgba(59,130,246,0.22); border-radius:14px 14px 4px 14px; padding:14px 18px; margin:8px 0; color:#e2e8f0; }
@@ -203,7 +202,7 @@ def _build_gauge(score: int, risk: str) -> go.Figure:
     color = _risk_color(risk)
     fig = go.Figure(go.Indicator(
         mode="gauge+number", value=score,
-        number={"suffix": "", "font": {"size": 68, "color": color, "family": "JetBrains Mono, monospace"}},
+        number={"suffix": "", "font": {"size": 68, "color": color, "family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"}},
         gauge={
             "axis": {"range": [0, 100], "tickwidth": 0, "tickcolor": "rgba(0,0,0,0)",
                      "tickfont": {"size": 11, "color": "#64748b"}},
@@ -596,18 +595,18 @@ def render_portfolio():
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
                 <div>
                     <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Total Invested</div>
-                    <div style="font-size:1.6rem; font-weight:800; font-family:'JetBrains Mono',monospace; color:#f0f0f0;">
+                    <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:#f0f0f0;">
                         {port_sum.get("total_invested", format_inr(total_invested))}</div>
                 </div>
                 <div style="font-size:2.2rem; color:#64748b;">\u2192</div>
                 <div>
                     <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Current Value</div>
-                    <div style="font-size:1.6rem; font-weight:800; font-family:'JetBrains Mono',monospace; color:{gl_color};">
+                    <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:{gl_color};">
                         {port_sum.get("total_current", format_inr(current_value))}</div>
                 </div>
                 <div>
                     <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Gain/Loss</div>
-                    <div style="font-size:1.6rem; font-weight:800; font-family:'JetBrains Mono',monospace; color:{gl_color};">
+                    <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:{gl_color};">
                         {gl_pct:+.1f}%</div>
                 </div>
             </div></div>""", unsafe_allow_html=True)
@@ -808,7 +807,7 @@ def render_history():
         st.markdown(f"""<tr>
             <td><strong>{c.name}</strong><br><span style="font-size:0.72rem; color:#94a3b8;">{trigger_short}</span></td>
             <td style="white-space:nowrap;">{c.start_date} \u2192<br>{c.end_date}</td>
-            <td style="color:{drop_color}; font-weight:700; font-family:'JetBrains Mono',monospace;">{c.nifty_peak_to_trough_pct}%</td>
+            <td style="color:{drop_color}; font-weight:700; font-variant-numeric:tabular-nums;">{c.nifty_peak_to_trough_pct}%</td>
             <td style="color:#22c55e; font-weight:600;">{rec_text}</td>
             <td style="font-size:0.78rem;">{sip_short}</td>
             <td style="font-size:0.78rem; color:#f59e0b;">{lesson_short}</td>
