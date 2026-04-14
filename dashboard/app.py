@@ -172,7 +172,7 @@ html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Se
     background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25);
     border-radius:12px; padding:20px 24px; text-align:center;
 }
-.wd-amount { font-size:2.2rem; font-weight:900; color:#ef4444; font-variant-numeric:tabular-nums; }
+.wd-amount { font-size:2.2rem; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums; }
 .wd-label { font-size:0.88rem; font-weight:500; color:#fca5a5; margin-top:4px; }
 
 .chat-user { background:rgba(59,130,246,0.10); border:1px solid rgba(59,130,246,0.22); border-radius:14px 14px 4px 14px; padding:14px 18px; margin:8px 0; color:#e2e8f0; }
@@ -298,9 +298,9 @@ def _build_scenario_chart(scenarios: dict) -> go.Figure:
     fig = go.Figure()
     for key, name, color in [
         ("stop", "Stop SIP (Panic)", "#ef4444"),
-        ("defense", "Switch to Debt", "#3b82f6"),
-        ("hold", "Continue SIP (Hold)", "#f59e0b"),
-        ("brave", "Increase SIP +50%", "#22c55e"),
+        ("hold", "Continue SIP (Hold)", "#3b82f6"),
+        ("brave", "Increase SIP +50%", "#10b981"),
+        ("defense", "Switch to Debt", "#64748b"),
     ]:
         vals = _extract(key)
         fig.add_trace(go.Bar(
@@ -364,7 +364,7 @@ with st.sidebar:
     <div style="text-align:center; padding: 10px 0 20px 0;">
         <div style="font-size:2.6rem;">🛡️</div>
         <div style="font-size:1.2rem; font-weight:800; color:#f0f0f0; letter-spacing:0.5px;">PanicGuard AI</div>
-        <div style="font-size:0.72rem; color:#8b5cf6; font-weight:500; letter-spacing:1px; text-transform:uppercase;">
+        <div style="font-size:0.72rem; color:#3b82f6; font-weight:500; letter-spacing:1px; text-transform:uppercase;">
             Your Financial Crisis Shield
         </div>
     </div>
@@ -400,7 +400,7 @@ with st.sidebar:
     <div style="text-align:center; padding:20px 0 0;">
         <div style="font-size:0.7rem; color:#64748b; line-height:1.5;">
             Powered by<br>
-            <span style="color:#8b5cf6; font-weight:600;">XGBoost + SHAP + Behavioral AI</span>
+            <span style="color:#3b82f6; font-weight:600;">XGBoost + SHAP + Behavioral AI</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -662,7 +662,7 @@ def render_portfolio():
             <div style="font-size:1.15rem; font-weight:700; color:#c4b5fd; margin-bottom:10px;">{sim_crash}</div>
             <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.6;">
                 {hist.get("message", crash_comp.get("recovery_timeline", ""))}</div>
-            <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(139,92,246,0.12);
+            <div style="margin-top:14px; padding-top:12px; border-top:1px solid rgba(30,58,95,0.60);
                         font-size:0.82rem; color:#f59e0b; font-weight:500;">
                 Recovery: <strong>{rec_mo} months</strong> &nbsp;·&nbsp; Post-bottom gain: <strong>+{post_g}%</strong></div>
             <div class="citation" style="margin-top:8px;">Source: BSE/NSE historical archives</div>
@@ -701,23 +701,23 @@ def render_scenarios():
 
     with s1:
         st.markdown(f"""<div class="scenario-card panic">
-            <div class="scenario-emoji">🔴</div><div class="scenario-title">Panic \u2014 Stop SIP</div>
+            <div class="scenario-emoji">✋</div><div class="scenario-title">Panic \u2014 Stop SIP</div>
             <div class="scenario-value" style="color:#ef4444;">{summary.get("stop_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s2:
         st.markdown(f"""<div class="scenario-card hold">
-            <div class="scenario-emoji">🟡</div><div class="scenario-title">Hold \u2014 Continue SIP</div>
-            <div class="scenario-value" style="color:#f59e0b;">{summary.get("hold_value", "\u2014")}</div>
+            <div class="scenario-emoji">🤝</div><div class="scenario-title">Hold \u2014 Continue SIP</div>
+            <div class="scenario-value" style="color:#3b82f6;">{summary.get("hold_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s3:
         st.markdown(f"""<div class="scenario-card brave">
-            <div class="scenario-emoji">🟢</div><div class="scenario-title">Brave \u2014 Increase 50%</div>
-            <div class="scenario-value" style="color:#22c55e;">{summary.get("brave_value", "\u2014")}</div>
+            <div class="scenario-emoji">💪</div><div class="scenario-title">Brave \u2014 Increase 50%</div>
+            <div class="scenario-value" style="color:#10b981;">{summary.get("brave_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s4:
         st.markdown(f"""<div class="scenario-card defense">
-            <div class="scenario-emoji">🔵</div><div class="scenario-title">Defense \u2014 Switch Debt</div>
-            <div class="scenario-value" style="color:#3b82f6;">{_scenario_val("defense", h_yrs)}</div>
+            <div class="scenario-emoji">🛡️</div><div class="scenario-title">Defense \u2014 Switch Debt</div>
+            <div class="scenario-value" style="color:#64748b;">{_scenario_val("defense", h_yrs)}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
@@ -746,9 +746,11 @@ def render_coach():
     co1, co2 = st.columns([2, 1])
     with co1:
         msg = coaching.get("coaching_message", "")
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown(msg)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown(f"""<div class="glass-card" style="border-left:4px solid #3b82f6;">
+            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
+                        letter-spacing:1.2px; color:#3b82f6; margin-bottom:12px;">Coach Message</div>
+            <div style="font-size:0.95rem; color:#e2e8f0; line-height:1.7;">{msg}</div>
+        </div>""", unsafe_allow_html=True)
 
     with co2:
         biases = coaching.get("detected_biases", [])
@@ -756,9 +758,18 @@ def render_coach():
             <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
                         letter-spacing:1.2px; color:#94a3b8; margin-bottom:12px;">🔍 Detected Behavioral Biases</div>
         """, unsafe_allow_html=True)
+        _bias_pill_colors = {
+            "Loss Aversion":       ("rgba(239,68,68,0.12)", "rgba(239,68,68,0.35)", "#fca5a5"),
+            "Recency Bias":        ("rgba(245,158,11,0.12)", "rgba(245,158,11,0.35)", "#fcd34d"),
+            "Herd Mentality":      ("rgba(249,115,22,0.12)", "rgba(249,115,22,0.35)", "#fdba74"),
+            "Panic / Emotional":   ("rgba(239,68,68,0.12)", "rgba(239,68,68,0.35)", "#fca5a5"),
+            "Anchoring":           ("rgba(139,92,246,0.12)", "rgba(139,92,246,0.35)", "#c4b5fd"),
+            "Availability Heuristic": ("rgba(59,130,246,0.12)", "rgba(59,130,246,0.35)", "#93c5fd"),
+        }
         if biases:
             for b in biases:
-                st.markdown(f'<span class="bias-pill">{b}</span>', unsafe_allow_html=True)
+                bg, bdr, txt = _bias_pill_colors.get(b, ("rgba(59,130,246,0.14)", "rgba(59,130,246,0.32)", "#93c5fd"))
+                st.markdown(f'<span style="display:inline-block; background:{bg}; border:1px solid {bdr}; color:{txt}; padding:6px 16px; border-radius:50px; font-size:0.78rem; font-weight:600; margin:4px 6px 4px 0;">{b}</span>', unsafe_allow_html=True)
             st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
             bd = _bias_descriptions()
             for b in biases:
@@ -778,7 +789,7 @@ def render_coach():
             """, unsafe_allow_html=True)
             for point in kd:
                 st.markdown(f"""<div style="font-size:0.78rem; color:#e2e8f0; margin:6px 0;
-                                 padding-left:14px; border-left:2px solid #8b5cf6;">{point}</div>""", unsafe_allow_html=True)
+                                 padding-left:14px; border-left:2px solid #3b82f6;">{point}</div>""", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
 render_coach()
@@ -825,17 +836,18 @@ def render_history():
         <th>Crisis</th><th>Period</th><th>Nifty Drop</th>
         <th>Recovery</th><th>SIP Continuers</th><th>Key Lesson</th></tr></thead><tbody>""", unsafe_allow_html=True)
 
-    for c in HISTORICAL_CRASHES:
+    for idx, c in enumerate(HISTORICAL_CRASHES):
         drop_color = _COLORS["red"] if c.nifty_peak_to_trough_pct < -25 else _COLORS["orange"]
         rec_text = f"{c.nifty_recovery_months} months" if c.nifty_recovery_months > 0 else "\u23f3 Ongoing"
         trigger_short = (c.trigger[:60] + "...") if len(c.trigger) > 60 else c.trigger
         sip_short = (c.typical_sip_continuers_outcome[:100] + "...") if len(c.typical_sip_continuers_outcome) > 100 else c.typical_sip_continuers_outcome
         lesson_short = (c.key_lesson[:80] + "...") if len(c.key_lesson) > 80 else c.key_lesson
-        st.markdown(f"""<tr>
+        row_bg = "rgba(30,58,95,0.18)" if idx % 2 == 0 else "transparent"
+        st.markdown(f"""<tr style="background:{row_bg};">
             <td><strong>{c.name}</strong><br><span style="font-size:0.72rem; color:#94a3b8;">{trigger_short}</span></td>
             <td style="white-space:nowrap;">{c.start_date} \u2192<br>{c.end_date}</td>
             <td style="color:{drop_color}; font-weight:700; font-variant-numeric:tabular-nums;">{c.nifty_peak_to_trough_pct}%</td>
-            <td style="color:#22c55e; font-weight:600;">{rec_text}</td>
+            <td style="color:#10b981; font-weight:600;">{rec_text}</td>
             <td style="font-size:0.78rem;">{sip_short}</td>
             <td style="font-size:0.78rem; color:#f59e0b;">{lesson_short}</td>
         </tr>""", unsafe_allow_html=True)
@@ -911,7 +923,7 @@ def render_shap():
             <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
                         letter-spacing:1.2px; color:#94a3b8; margin-bottom:12px;">Plain English Explanation</div>
             <div style="font-size:1.05rem; color:#f0f0f0; font-weight:600; margin-bottom:14px;">
-                Here's <span style="color:#8b5cf6;">WHY</span> PanicGuard thinks panic risk is {pan_score}%</div>
+                Here's <span style="color:#3b82f6;">WHY</span> PanicGuard thinks panic risk is {pan_score}%</div>
             <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.7;">
                 {shap_expl or "The model considers 15 technical and macro features. Run analysis to see details."}</div>
         </div>""", unsafe_allow_html=True)
@@ -936,14 +948,14 @@ st.markdown(f"""
 <div class="app-footer">
     <div style="margin-bottom:8px;">
         <span style="font-size:1.4rem;">🛡️</span>
-        <span style="font-weight:700; color:#8b5cf6;"> PanicGuard AI</span>
+        <span style="font-weight:700; color:#3b82f6;"> PanicGuard AI</span>
     </div>
     Built for <strong>AI Automate 2026 Hackathon</strong><br>
     <div style="margin-top:6px;">
         <strong>Data Sources:</strong> NSE (via Yahoo Finance) · BSE · AMFI Monthly Reports · India VIX<br>
         <strong>SIP Stoppage Stat (76%):</strong> AMFI data, Feb 2026 · Historical crash data: BSE/NSE archives
     </div>
-    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(139,92,246,0.1);">
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(30,58,95,0.50);">
         \u2696\ufe0f <em>This is not financial advice. Not SEBI-registered.
         For educational and behavioral support purposes only.</em>
     </div>
