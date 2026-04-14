@@ -430,7 +430,9 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    analyze_btn = st.button("\U0001f50d Analyze My Portfolio", use_container_width=True, type="primary")
+    st.markdown("""<div style="font-size:0.72rem; color:#64748b; text-align:center; margin-bottom:6px;">
+        Run live analysis with your current inputs</div>""", unsafe_allow_html=True)
+    analyze_btn = st.button("🔍 Analyze My Portfolio", use_container_width=True, type="primary")
 
     st.markdown("""
     <div style="text-align:center; padding:20px 0 0;">
