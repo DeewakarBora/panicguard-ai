@@ -182,8 +182,8 @@ The system combines:
 | Crash Event | Detected | Peak Panic Score | Early Warning | Hold Return | Sell Loss |
 |---|---|---|---|---|---|
 | COVID-19 Crash (Mar 2020) | YES | **100 / 100** | **11 days early** | **+112%** | -15% |
-| Russia-Ukraine Selloff (2022) | — | 40 / 100 | — | +28% | -10% |
-| April 2026 Tariff Crash | — | Live | Live | TBD | -12% |
+| Russia-Ukraine Selloff (2022) | YES | **65 / 100** | **3 days early** | **+28%** | -10% |
+| April 2026 Tariff Crash | YES | **73 / 100** (live) | Active monitoring | Monitoring | -12% |
 
 > **Key result:** In the COVID-19 crash, the model reached maximum panic score on March 19, 2020 — **11 trading days before the technical bottom**. Investors who held (or increased SIPs) through the crash gained **112%** from the bottom within 18 months.
 
@@ -229,16 +229,16 @@ The behavioral gap — the difference between what a rational investor *should* 
 
 ## Screenshots
 
-> *Dashboard running on Streamlit Cloud — dark glassmorphism UI*
+> Screenshots are available in the deployed app at [PanicGuard AI Live Demo](https://deewakar-panicguard-ai.streamlit.app)
 
 | Section | Description |
 |---|---|
-| Panic Score Gauge | Animated 0–100 gauge with risk level and color coding |
+| Panic Score Gauge | Animated 0–100 gauge with risk-level color border and 15-indicator subtitle |
 | Market Snapshot | Live Nifty · VIX · Crude with daily change indicators |
 | SIP Scenario Projections | 4 behavioral paths plotted over 5/10/15/20 year horizons |
-| AI Behavioral Coach | Full conversational chat with bias detection |
+| AI Behavioral Coach | Conversational chat with bias detection, embedded in coaching section |
 | Historical Crash Browser | 7 Indian market crashes with recovery timelines |
-| SHAP Explainability | Waterfall + beeswarm plots with plain English explanations |
+| SHAP Explainability | Waterfall + beeswarm plots with plain-English hover tooltips |
 
 ---
 
