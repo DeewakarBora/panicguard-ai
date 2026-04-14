@@ -125,7 +125,7 @@ html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Se
     border: 1px solid rgba(30, 58, 95, 0.70); border-radius: 14px;
     padding: 20px 22px; text-align: center;
 }
-.metric-label { font-size:0.78rem; font-weight:500; text-transform:uppercase; letter-spacing:1.2px; color:#94a3b8; margin-bottom:6px; }
+.metric-label { font-size:0.78rem; font-weight:500; letter-spacing:0.4px; color:#94a3b8; margin-bottom:6px; }
 .metric-value { font-size:1.65rem; font-weight:700; color:#f1f5f9; font-variant-numeric:tabular-nums; }
 .metric-delta { font-size:0.82rem; font-weight:500; margin-top:4px; }
 .delta-up { color:#10b981; } .delta-down { color:#ef4444; }
@@ -140,7 +140,7 @@ html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Se
 .scenario-card.brave  { border-left: 3px solid #10b981; }
 .scenario-card.defense{ border-left: 3px solid #3b82f6; }
 .scenario-emoji { font-size:2rem; margin-bottom:6px; }
-.scenario-title { font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:10px; }
+.scenario-title { font-size:0.85rem; font-weight:600; letter-spacing:0.3px; color:#94a3b8; margin-bottom:10px; }
 .scenario-value { font-size:1.45rem; font-weight:800; font-variant-numeric:tabular-nums; }
 .scenario-sub   { font-size:0.75rem; color:#94a3b8; margin-top:6px; }
 
@@ -167,6 +167,12 @@ html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Se
 
 @keyframes pulse-critical { 0%{box-shadow:0 0 0 0 rgba(239,68,68,0.45);} 70%{box-shadow:0 0 0 18px rgba(239,68,68,0);} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0);} }
 .pulse { animation: pulse-critical 1.8s infinite; border-radius: 50%; }
+@keyframes pulse-dot-green { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.75);} }
+@keyframes pulse-dot-gray { 0%,100%{opacity:0.7;} 50%{opacity:0.3;} }
+.live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981; animation:pulse-dot-green 1.4s ease-in-out infinite; margin-right:5px; vertical-align:middle; }
+.live-dot-demo { display:inline-block; width:7px; height:7px; border-radius:50%; background:#94a3b8; animation:pulse-dot-gray 2.5s ease-in-out infinite; margin-right:5px; vertical-align:middle; }
+@keyframes score-glow-red { 0%,100%{filter:drop-shadow(0 0 0px rgba(239,68,68,0));} 50%{filter:drop-shadow(0 0 12px rgba(239,68,68,0.55));} }
+.ai-coach-card { background:rgba(12,24,48,0.75); border:1px solid rgba(59,130,246,0.18); border-radius:18px; padding:24px 28px; margin-bottom:16px; }
 
 .wealth-destroyed {
     background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25);
@@ -179,8 +185,8 @@ html, body, [class*="st-"] { font-family: -apple-system, BlinkMacSystemFont, "Se
 .chat-ai { background:rgba(14,26,46,0.85); border:1px solid rgba(30,58,95,0.70); border-radius:14px 14px 14px 4px; padding:14px 18px; margin:8px 0; color:#e2e8f0; }
 
 .stSelectbox > div > div, .stSlider > div { border-color:rgba(30,58,95,0.80) !important; }
-.stButton > button { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%) !important; color:white !important; border:none !important; border-radius:10px !important; padding:10px 28px !important; font-weight:600 !important; transition:all .2s !important; }
-.stButton > button:hover { transform:translateY(-1px) !important; box-shadow:0 4px 20px rgba(59,130,246,0.30) !important; }
+.stButton > button { background:#3b82f6 !important; color:white !important; border:none !important; border-radius:8px !important; padding:10px 28px !important; font-weight:600 !important; transition:all .2s !important; box-shadow:0 2px 8px rgba(59,130,246,0.28) !important; }
+.stButton > button:hover { background:#60a5fa !important; transform:translateY(-1px) !important; box-shadow:0 4px 18px rgba(59,130,246,0.40) !important; }
 div[data-testid="stSidebar"] { background:linear-gradient(180deg,#0e1a2e 0%,#0a1628 100%) !important; border-right:1px solid rgba(30,58,95,0.70) !important; }
 
 .info-banner { background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.20); border-radius:10px; padding:10px 18px; font-size:0.78rem; color:#93c5fd; text-align:center; margin-bottom:12px; }
@@ -202,7 +208,7 @@ def _build_gauge(score: int, risk: str) -> go.Figure:
     color = _risk_color(risk)
     fig = go.Figure(go.Indicator(
         mode="gauge+number", value=score,
-        number={"suffix": "", "font": {"size": 68, "color": color, "family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"}},
+        number={"suffix": "", "font": {"size": 88, "color": color, "family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"}},
         gauge={
             "axis": {"range": [0, 100], "tickwidth": 0, "tickcolor": "rgba(0,0,0,0)",
                      "tickfont": {"size": 11, "color": "#64748b"}},
@@ -236,9 +242,28 @@ def _panic_interpretation(score: int, risk: str) -> str:
     return "Markets are calm. Your long-term plan is on track — no action needed."
 
 
+_FACTOR_TOOLTIPS = {
+    "VIX": "India VIX measures how fearful the market is. Above 20 = elevated fear, above 30 = extreme panic.",
+    "India VIX": "India VIX measures how fearful the market is. Above 20 = elevated fear, above 30 = extreme panic.",
+    "Nifty Change": "How much Nifty 50 moved recently. Large drops increase the panic score.",
+    "Nifty Drop": "How much Nifty 50 has fallen from its recent peak.",
+    "FII Selling": "Foreign investors pulling money out of India — a leading indicator of market stress.",
+    "FII Flow": "Foreign institutional investor buying/selling. Heavy selling = risk-off environment.",
+    "DII Flow": "Domestic institutions are often contrarian buyers. High DII buying can cushion a fall.",
+    "Crude Oil": "Rising crude = higher inflation risk + rupee pressure. Bad for Indian markets.",
+    "USD/INR": "Rupee weakening signals capital outflows and increases import costs for companies.",
+    "RSI": "Relative Strength Index: below 30 means the market is technically oversold — often a buy signal.",
+    "MACD": "Momentum indicator. Bearish crossover = downward trend acceleration.",
+    "Advance Decline": "Ratio of stocks rising vs falling. Low ratio = broad-based selloff, not just a few stocks.",
+    "PCR": "Put/Call ratio — high value means many investors buying insurance against a fall.",
+    "Volume Spike": "Unusual trading volume often signals institutional activity or panic selling.",
+    "SIP Stoppage": "When retail investors stop SIPs en masse, it historically marks the fear bottom.",
+}
+
 def _build_factor_bars(factors: list[dict]) -> go.Figure:
     names = [f["factor"] for f in reversed(factors)]
     impacts = [float(str(f.get("impact", "0")).replace("%", "")) for f in reversed(factors)]
+    tooltips = [_FACTOR_TOOLTIPS.get(n, f"{n}: contributes to the overall panic score.") for n in names]
     n = len(names)
     # Color by rank: highest-impact bar = red, tapering to amber
     bar_colors = []
@@ -252,6 +277,8 @@ def _build_factor_bars(factors: list[dict]) -> go.Figure:
         marker_color=bar_colors, marker_line_width=0,
         text=[f"{v}%" for v in impacts], textposition="outside",
         textfont={"size": 12, "color": "#e2e8f0"},
+        customdata=tooltips,
+        hovertemplate="<b>%{y}</b><br>Impact: %{x}%<br><br><i>%{customdata}</i><extra></extra>",
     ))
     fig.update_layout(
         height=max(140, 50 * len(names)), margin=dict(t=5, b=5, l=10, r=60),
@@ -398,9 +425,8 @@ with st.sidebar:
 
     st.markdown("""
     <div style="text-align:center; padding:20px 0 0;">
-        <div style="font-size:0.7rem; color:#64748b; line-height:1.5;">
-            Powered by<br>
-            <span style="color:#3b82f6; font-weight:600;">XGBoost + SHAP + Behavioral AI</span>
+        <div style="font-size:0.7rem; color:#475569; line-height:1.5;">
+            Your calm in the market storm
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -496,6 +522,7 @@ def render_header():
         now = datetime.now()
         dot = "\U0001f7e2" if pan_score < 60 else ("\U0001f7e1" if pan_score < 80 else "\U0001f534")
         badge_label = "Sample Analysis" if is_demo else "Live"
+        dot_cls = "live-dot-demo" if is_demo else "live-dot"
         badge_style = ("background:rgba(100,116,139,0.18); color:#94a3b8; border:1px solid rgba(100,116,139,0.35);"
                        "padding:3px 12px; border-radius:50px; font-size:0.75rem; font-weight:500;"
                        if is_demo else
@@ -504,7 +531,7 @@ def render_header():
         st.markdown(f"""
         <div style="text-align:right; padding:12px 0;">
             <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:6px;">{dot} {now.strftime("%d %b %Y, %I:%M %p")}</div>
-            <span style="{badge_style}">{badge_label}</span>
+            <span style="{badge_style}"><span class="{dot_cls}"></span>{badge_label}</span>
         </div>""", unsafe_allow_html=True)
 
 render_header()
@@ -520,12 +547,13 @@ def render_panic_score():
     g1, g2 = st.columns([6, 4])
     with g1:
         color = _risk_color(risk_lvl)
-        pulse_cls = "pulse" if risk_lvl == "CRITICAL" else ""
+        pulse_cls = "pulse" if risk_lvl in ("CRITICAL", "HIGH") else ""
         glow_shadow = f"box-shadow: 0 0 32px {color}30, 0 0 8px {color}18;"
+        top_border = f"border-top: 4px solid {color};"
         st.markdown(f"""
-        <div class="glass-card gauge-wrapper" style="{glow_shadow}">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:1.4px; color:#94a3b8; margin-bottom:4px;">Market Panic Index</div>
+        <div class="glass-card gauge-wrapper" style="{glow_shadow} {top_border} padding-top:20px; padding-bottom:30px;">
+            <div style="font-size:1.05rem; font-weight:700; color:#f1f5f9; margin-bottom:2px;">🛡️ Market Panic Index</div>
+            <div style="font-size:0.78rem; color:#64748b; margin-bottom:8px;">Real-time risk assessment powered by 15 market indicators</div>
         """, unsafe_allow_html=True)
         st.plotly_chart(_build_gauge(pan_score, risk_lvl), use_container_width=True, key="gauge")
         conf = coaching.get("confidence_level", 0.8)
@@ -545,8 +573,7 @@ def render_panic_score():
     with g2:
         factors = crisis.get("top_factors", [])
         st.markdown("""<div class="glass-card">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:1.4px; color:#94a3b8; margin-bottom:8px;">Top Factors Driving This Score</div>
+            <div style="font-size:0.92rem; font-weight:600; color:#f1f5f9; margin-bottom:8px;">Top Factors Driving This Score</div>
         """, unsafe_allow_html=True)
         if factors:
             st.plotly_chart(_build_factor_bars(factors), use_container_width=True, key="factors")
@@ -612,7 +639,7 @@ st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 @_safe_section("Portfolio")
 def render_portfolio():
     st.markdown("""<div class="section-header">💼 Your Portfolio</div>
-    <div class="section-sub">Current standing and crisis impact analysis</div>""", unsafe_allow_html=True)
+    <div class="section-sub">Personalized impact analysis based on your investments</div>""", unsafe_allow_html=True)
 
     p1, p2 = st.columns([2, 1])
     with p1:
@@ -621,18 +648,18 @@ def render_portfolio():
         st.markdown(f"""<div class="glass-card">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
                 <div>
-                    <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Total Invested</div>
+                    <div style="font-size:0.78rem; color:#94a3b8; letter-spacing:0.4px;">Total Invested</div>
                     <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:#f0f0f0;">
                         {port_sum.get("total_invested", format_inr(total_invested))}</div>
                 </div>
                 <div style="font-size:2.2rem; color:#64748b;">\u2192</div>
                 <div>
-                    <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Current Value</div>
+                    <div style="font-size:0.78rem; color:#94a3b8; letter-spacing:0.4px;">Current Value</div>
                     <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:{gl_color};">
                         {port_sum.get("total_current", format_inr(current_value))}</div>
                 </div>
                 <div>
-                    <div style="font-size:0.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Gain/Loss</div>
+                    <div style="font-size:0.78rem; color:#94a3b8; letter-spacing:0.4px;">Gain/Loss</div>
                     <div style="font-size:1.6rem; font-weight:800; font-variant-numeric:tabular-nums; color:{gl_color};">
                         {gl_pct:+.1f}%</div>
                 </div>
@@ -657,7 +684,7 @@ def render_portfolio():
         rec_mo = hist.get("recovery_months", crash_comp.get("recovery_months", "?"))
         post_g = hist.get("post_bottom_gain", crash_comp.get("post_bottom_gain", "?"))
         st.markdown(f"""<div class="glass-card">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; color:#94a3b8; margin-bottom:10px;">
+            <div style="font-size:0.82rem; font-weight:600; color:#94a3b8; margin-bottom:10px;">
                 📈 Most Similar Crash</div>
             <div style="font-size:1.15rem; font-weight:700; color:#c4b5fd; margin-bottom:10px;">{sim_crash}</div>
             <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.6;">
@@ -678,14 +705,14 @@ st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 @_safe_section("SIP Scenarios")
 def render_scenarios():
-    st.markdown("""<div class="section-header">💰 What Happens to Your Money?</div>
-    <div class="section-sub">Four scenarios. One decision. A lifetime of difference.</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="section-header">💰 What Should You Do?</div>
+    <div class="section-sub">Four paths, one smart choice</div>""", unsafe_allow_html=True)
 
     wd = cost_data.get("wealth_destroyed", sip_data.get("summary", {}).get("cost_of_panic", "\u20b90"))
     h_yrs = sip_data.get("horizon_years", horizon)
     st.markdown(f"""<div class="wealth-destroyed">
-        <div style="font-size:0.78rem; color:#fca5a5; font-weight:600; text-transform:uppercase;
-                    letter-spacing:1.2px; margin-bottom:6px;">Wealth Destroyed by Panicking</div>
+        <div style="font-size:0.82rem; color:#fca5a5; font-weight:600; letter-spacing:0.4px; margin-bottom:6px;">
+            Wealth Destroyed by Panicking</div>
         <div class="wd-amount">{wd}</div>
         <div class="wd-label">This is how much you lose over {h_yrs} years by stopping your SIP today</div>
     </div>""", unsafe_allow_html=True)
@@ -701,22 +728,22 @@ def render_scenarios():
 
     with s1:
         st.markdown(f"""<div class="scenario-card panic">
-            <div class="scenario-emoji">✋</div><div class="scenario-title">Panic \u2014 Stop SIP</div>
+            <div class="scenario-emoji">✋</div><div class="scenario-title">Panic — Stop SIP</div>
             <div class="scenario-value" style="color:#ef4444;">{summary.get("stop_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s2:
         st.markdown(f"""<div class="scenario-card hold">
-            <div class="scenario-emoji">🤝</div><div class="scenario-title">Hold \u2014 Continue SIP</div>
-            <div class="scenario-value" style="color:#3b82f6;">{summary.get("hold_value", "\u2014")}</div>
+            <div class="scenario-emoji">🤝</div><div class="scenario-title">Hold — Continue SIP</div>
+            <div class="scenario-value" style="color:#34d399;">{summary.get("hold_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s3:
         st.markdown(f"""<div class="scenario-card brave">
-            <div class="scenario-emoji">💪</div><div class="scenario-title">Brave \u2014 Increase 50%</div>
-            <div class="scenario-value" style="color:#10b981;">{summary.get("brave_value", "\u2014")}</div>
+            <div class="scenario-emoji">💪</div><div class="scenario-title">Brave — Increase 50%</div>
+            <div class="scenario-value" style="color:#34d399;">{summary.get("brave_value", "\u2014")}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
     with s4:
         st.markdown(f"""<div class="scenario-card defense">
-            <div class="scenario-emoji">🛡️</div><div class="scenario-title">Defense \u2014 Switch Debt</div>
+            <div class="scenario-emoji">🛡️</div><div class="scenario-title">Defense — Switch Debt</div>
             <div class="scenario-value" style="color:#64748b;">{_scenario_val("defense", h_yrs)}</div>
             <div class="scenario-sub">in {h_yrs} years</div></div>""", unsafe_allow_html=True)
 
@@ -746,17 +773,36 @@ def render_coach():
     co1, co2 = st.columns([2, 1])
     with co1:
         msg = coaching.get("coaching_message", "")
-        st.markdown(f"""<div class="glass-card" style="border-left:4px solid #3b82f6;">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:1.2px; color:#3b82f6; margin-bottom:12px;">Coach Message</div>
+        st.markdown(f"""<div class="ai-coach-card" style="border-left:4px solid #3b82f6;">
+            <div style="font-size:0.82rem; font-weight:600; color:#3b82f6; margin-bottom:12px;">Coach Message</div>
             <div style="font-size:0.95rem; color:#e2e8f0; line-height:1.7;">{msg}</div>
         </div>""", unsafe_allow_html=True)
 
+        # ── Chat input lives here, inside the coach section ────────────
+        st.markdown("""<div class="ai-coach-card" style="margin-top:4px;">
+            <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:8px;">💬 Ask the AI Coach</div>
+        """, unsafe_allow_html=True)
+        user_input = st.chat_input("Ask anything — e.g., 'Should I stop my SIP?'")
+        if user_input:
+            st.session_state.chat_history.append({"role": "user", "content": user_input})
+            try:
+                orch = _get_orchestrator(portfolio)
+                reply = orch.run_chat(user_input)
+            except Exception:
+                reply = ("Every crash in Indian market history has been followed by recovery. "
+                         "Continue your SIP — you are buying at a discount. What specifically is worrying you?")
+            st.session_state.chat_history.append({"role": "assistant", "content": reply})
+        for msg_item in st.session_state.chat_history:
+            if msg_item["role"] == "user":
+                st.markdown(f'<div class="chat-user">🙋 {msg_item["content"]}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="chat-ai">🛡️ {msg_item["content"]}</div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
     with co2:
         biases = coaching.get("detected_biases", [])
-        st.markdown("""<div class="glass-card">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:1.2px; color:#94a3b8; margin-bottom:12px;">🔍 Detected Behavioral Biases</div>
+        st.markdown("""<div class="ai-coach-card">
+            <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:12px;">🔍 Detected Behavioral Biases</div>
         """, unsafe_allow_html=True)
         _bias_pill_colors = {
             "Loss Aversion":       ("rgba(239,68,68,0.12)", "rgba(239,68,68,0.35)", "#fca5a5"),
@@ -778,14 +824,13 @@ def render_coach():
                                 unsafe_allow_html=True)
         else:
             st.markdown("""<div style="font-size:0.82rem; color:#22c55e;">
-                \u2705 No panic-driven biases detected. You're thinking clearly!</div>""", unsafe_allow_html=True)
+                ✅ No panic-driven biases detected. You're thinking clearly!</div>""", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
         kd = coaching.get("key_data_points", [])
         if kd:
-            st.markdown("""<div class="glass-card">
-                <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                            letter-spacing:1.2px; color:#94a3b8; margin-bottom:10px;">📌 Key Data Points</div>
+            st.markdown("""<div class="ai-coach-card">
+                <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:10px;">📌 Key Data Points</div>
             """, unsafe_allow_html=True)
             for point in kd:
                 st.markdown(f"""<div style="font-size:0.78rem; color:#e2e8f0; margin:6px 0;
@@ -796,29 +841,6 @@ render_coach()
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 
-# ── Chat Interface (ISSUE 5: persists in session state) ────────────────
-@_safe_section("Chat")
-def render_chat():
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    st.markdown("""<div style="font-size:0.92rem; font-weight:600; color:#f0f0f0; margin-bottom:8px;">
-        💬 Ask the AI Coach</div>""", unsafe_allow_html=True)
-
-    user_input = st.chat_input("Ask anything \u2014 e.g., 'Should I stop my SIP?'")
-    if user_input:
-        st.session_state.chat_history.append({"role": "user", "content": user_input})
-        try:
-            orch = _get_orchestrator(portfolio)
-            reply = orch.run_chat(user_input)
-        except Exception:
-            reply = ("Every crash in Indian market history has been followed by recovery. "
-                     "Continue your SIP \u2014 you are buying at a discount. What specifically is worrying you?")
-        st.session_state.chat_history.append({"role": "assistant", "content": reply})
-
-    for msg_item in st.session_state.chat_history:
-        if msg_item["role"] == "user":
-            st.markdown(f'<div class="chat-user">\U0001f64b {msg_item["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="chat-ai">\U0001f6e1\ufe0f {msg_item["content"]}</div>', unsafe_allow_html=True)
 
 # ╔══════════════════════════════════════════════════════════════════════╗
 # ║  § 6  HISTORICAL PROOF                                              ║
@@ -920,8 +942,7 @@ def render_shap():
     with x2:
         shap_expl = crisis.get("shap_explanation", "")
         st.markdown(f"""<div class="glass-card">
-            <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:1.2px; color:#94a3b8; margin-bottom:12px;">Plain English Explanation</div>
+            <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:12px;">Plain English Explanation</div>
             <div style="font-size:1.05rem; color:#f0f0f0; font-weight:600; margin-bottom:14px;">
                 Here's <span style="color:#3b82f6;">WHY</span> PanicGuard thinks panic risk is {pan_score}%</div>
             <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.7;">
@@ -937,31 +958,29 @@ def render_shap():
 render_shap()
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
-render_chat()
-
 
 # ╔══════════════════════════════════════════════════════════════════════╗
-# ║  § FOOTER  (ISSUE 9: citations)                                     ║
+# ║  § FOOTER                                                           ║
 # ╚══════════════════════════════════════════════════════════════════════╝
 
 st.markdown(f"""
 <div class="app-footer">
-    <div style="margin-bottom:8px;">
+    <div style="margin-bottom:10px;">
         <span style="font-size:1.4rem;">🛡️</span>
         <span style="font-weight:700; color:#3b82f6;"> PanicGuard AI</span>
     </div>
-    Built for <strong>AI Automate 2026 Hackathon</strong><br>
-    <div style="margin-top:6px;">
-        <strong>Data Sources:</strong> NSE (via Yahoo Finance) · BSE · AMFI Monthly Reports · India VIX<br>
-        <strong>SIP Stoppage Stat (76%):</strong> AMFI data, Feb 2026 · Historical crash data: BSE/NSE archives
+    <div style="color:#94a3b8; margin-bottom:6px;">
+        Built with care for India's 55 million SIP investors &nbsp;·&nbsp; AI Automate 2026
     </div>
-    <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(30,58,95,0.50);">
-        \u2696\ufe0f <em>This is not financial advice. Not SEBI-registered.
-        For educational and behavioral support purposes only.</em>
+    <div style="color:#64748b; margin-bottom:6px;">
+        Data: NSE &nbsp;·&nbsp; BSE &nbsp;·&nbsp; AMFI &nbsp;·&nbsp; Yahoo Finance
+    </div>
+    <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(30,58,95,0.50); color:#64748b;">
+        ⚠️ Not financial advice. For educational purposes only.
     </div>
     <div style="margin-top:8px; font-size:0.68rem; color:#475569;">
-        Pipeline: {result.get("pipeline_time_s", 0):.2f}s &nbsp;\u00b7&nbsp;
-        Status: {result.get("status", "?")} &nbsp;\u00b7&nbsp;
+        Pipeline: {result.get("pipeline_time_s", 0):.2f}s &nbsp;·&nbsp;
+        Status: {result.get("status", "?")} &nbsp;·&nbsp;
         {result.get("timestamp", "")}
     </div>
 </div>
