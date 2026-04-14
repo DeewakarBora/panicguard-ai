@@ -12,6 +12,7 @@ Run:
 
 from __future__ import annotations
 
+import re
 import sys
 import traceback
 from datetime import datetime
@@ -202,6 +203,14 @@ div[data-testid="stSidebar"] { background:linear-gradient(180deg,#0e1a2e 0%,#0a1
 
 def _risk_color(level: str) -> str:
     return RISK_COLOR.get(level, _COLORS["accent"])
+
+
+def _md_to_html(text: str) -> str:
+    """Convert common markdown patterns to HTML for embedding inside raw HTML divs."""
+    text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text, flags=re.DOTALL)
+    text = re.sub(r'\*(.*?)\*', r'<em>\1</em>', text, flags=re.DOTALL)
+    text = text.replace('\n\n', '<br><br>').replace('\n', '<br>')
+    return text
 
 
 def _build_gauge(score: int, risk: str) -> go.Figure:
@@ -773,9 +782,10 @@ def render_coach():
     co1, co2 = st.columns([2, 1])
     with co1:
         msg = coaching.get("coaching_message", "")
+        msg_html = _md_to_html(msg)
         st.markdown(f"""<div class="ai-coach-card" style="border-left:4px solid #3b82f6;">
             <div style="font-size:0.82rem; font-weight:600; color:#3b82f6; margin-bottom:12px;">Coach Message</div>
-            <div style="font-size:0.95rem; color:#e2e8f0; line-height:1.7;">{msg}</div>
+            <div style="font-size:0.95rem; color:#e2e8f0; line-height:1.7;">{msg_html}</div>
         </div>""", unsafe_allow_html=True)
 
         # ── Chat input lives here, inside the coach section ────────────
