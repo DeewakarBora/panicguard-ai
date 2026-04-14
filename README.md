@@ -9,6 +9,7 @@
 [![Claude](https://img.shields.io/badge/Claude-Behavioral_Coach-7c3aed?logo=anthropic&logoColor=white)](https://anthropic.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
 [![Hackathon](https://img.shields.io/badge/Built_For-AI_Automate_2026-8b5cf6)](.)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Streamlit_Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://deewakar-panicguard-ai.streamlit.app)
 
 ---
 
