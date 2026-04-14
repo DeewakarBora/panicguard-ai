@@ -262,25 +262,36 @@ class PanicGuardOrchestrator:
                 "What specifically is worrying you?"
             )
 
-        # Build context from cached data
+        # Build rich context so template-mode chat can give data-driven answers
         context = {}
         if self._last_crisis_data:
-            context["panic_score"] = f"{self._last_crisis_data.get('panic_score', 0)}/100"
-            context["risk_level"]  = self._last_crisis_data.get("risk_level", "N/A")
+            context["panic_score"]   = self._last_crisis_data.get("panic_score", 0)
+            context["risk_level"]    = self._last_crisis_data.get("risk_level", "N/A")
             mkt = self._last_crisis_data.get("market_summary", {})
             context["nifty"] = mkt.get("nifty", "N/A")
             context["vix"]   = mkt.get("vix", "N/A")
 
         if self._last_portfolio_report:
             ps = self._last_portfolio_report.get("portfolio_summary", {})
-            context["portfolio_value"] = ps.get("total_current", "N/A")
-            context["monthly_sip"] = ps.get("monthly_sip", "N/A")
+            context["portfolio_value"]  = ps.get("total_current", "N/A")
+            context["total_invested"]   = ps.get("total_invested", "N/A")
+            context["gain_loss_pct"]    = ps.get("gain_loss_pct", 0)
+            context["monthly_sip"]      = ps.get("monthly_sip", "N/A")
             cp = self._last_portfolio_report.get("cost_of_panic", {})
             context["cost_of_stopping_sip"] = cp.get("wealth_destroyed", "N/A")
+            context["fv_if_continue"]   = cp.get("fv_if_continue", "N/A")
+            context["fv_if_stop"]       = cp.get("fv_if_stop", "N/A")
+            sip = self._last_portfolio_report.get("sip_scenarios", {})
+            summary = sip.get("summary", {})
+            context["hold_value"]  = summary.get("hold_value", "N/A")
+            context["stop_value"]  = summary.get("stop_value", "N/A")
+            context["brave_value"] = summary.get("brave_value", "N/A")
+            context["horizon_years"] = sip.get("horizon_years", 10)
 
         if self._last_crash_comparison:
-            context["similar_crash"] = self._last_crash_comparison.get("most_similar_crash", "N/A")
-            context["recovery_months"] = self._last_crash_comparison.get("recovery_months", "N/A")
+            context["similar_crash"]    = self._last_crash_comparison.get("most_similar_crash", "N/A")
+            context["recovery_months"]  = self._last_crash_comparison.get("recovery_months", "N/A")
+            context["post_bottom_gain"] = self._last_crash_comparison.get("post_bottom_gain", "N/A")
 
         return self._behavioral_coach.chat(user_message, context=context)
 

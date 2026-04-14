@@ -491,70 +491,243 @@ The 24% who continued? They built significantly more wealth over the next decade
         biases: list[str],
         context: Optional[dict],
     ) -> str:
-        """Template-based reply for interactive chat (no LLM)."""
+        """
+        Keyword-routed template replies — each branch injects real numbers
+        from the analysis context so no two responses feel generic.
+        """
+        ctx = context or {}
+        msg = user_message.lower()
 
-        bias_response = ""
-        if "Loss Aversion" in biases:
-            bias_response = (
-                "I notice you're focused on the loss side — that's called loss aversion. "
-                "Research shows losses feel 2x more painful than gains feel good. "
-                "But remember: you haven't actually lost anything until you sell. "
-            )
-        elif "Herd Mentality" in biases:
-            bias_response = (
-                "It sounds like you're being influenced by what others are doing. "
-                "That's herd mentality — and historically, the herd panics at the worst time. "
-                "The 76% who stopped SIPs during past crashes? That was the herd. "
-                "The 24% who continued? They came out ahead every single time. "
-            )
-        elif "Recency Bias" in biases:
-            bias_response = (
-                "You're assuming what's happening now will continue forever. "
-                "That's recency bias. In reality, every Indian market crash in the last "
-                "20 years was followed by a full recovery — the average recovery time "
-                "was just 12 months. "
-            )
-        elif "Panic / Emotional" in biases:
-            bias_response = (
-                "I can hear the urgency in your message. Take a deep breath. "
-                "The market is not going to zero. India's GDP is still growing. "
-                "Companies still have earnings. What you're feeling is temporary — "
-                "and making permanent decisions based on temporary emotions is the "
-                "single biggest wealth destroyer for retail investors. "
+        # ── Extract context values with sensible defaults ─────────────────
+        panic_score     = ctx.get("panic_score", 73)
+        risk_level      = ctx.get("risk_level", "HIGH")
+        monthly_sip     = ctx.get("monthly_sip", "your SIP")
+        portfolio_value = ctx.get("portfolio_value", "your portfolio")
+        total_invested  = ctx.get("total_invested", "your invested amount")
+        gain_loss_pct   = ctx.get("gain_loss_pct", 0)
+        wealth_lost     = ctx.get("cost_of_stopping_sip", "lakhs of rupees")
+        similar_crash   = ctx.get("similar_crash", "COVID-19 (2020)")
+        recovery_months = ctx.get("recovery_months", 7)
+        post_gain       = ctx.get("post_bottom_gain", 112)
+        hold_value      = ctx.get("hold_value", "a much higher amount")
+        stop_value      = ctx.get("stop_value", "a much lower amount")
+        brave_value     = ctx.get("brave_value", "the highest potential outcome")
+        horizon_years   = ctx.get("horizon_years", 10)
+        vix             = ctx.get("vix", "N/A")
+
+        # Format gain/loss as a signed percentage string
+        try:
+            gain_str = f" ({float(gain_loss_pct):+.1f}%)"
+        except (TypeError, ValueError):
+            gain_str = ""
+
+        # Format VIX
+        try:
+            vix_str = f"{float(vix):.1f}"
+            vix_high = float(vix) > 20
+        except (TypeError, ValueError):
+            vix_str = str(vix)
+            vix_high = False
+
+        # Format Nifty
+        nifty = ctx.get("nifty", "N/A")
+        try:
+            nifty_str = f"{float(nifty):,.0f}"
+        except (TypeError, ValueError):
+            nifty_str = str(nifty)
+
+        # ── Bias preamble (prepended when a strong bias is detected) ──────
+        _bias_notes = {
+            "Loss Aversion": (
+                "🧠 **What I notice:** You're focused on the loss — that's **loss aversion**, "
+                "where losses feel 2× more painful than equivalent gains. "
+                "The loss you're seeing is on paper only. It becomes real only if you sell.\n\n"
+            ),
+            "Herd Mentality": (
+                "🧠 **What I notice:** You may be reacting to what others are doing — "
+                "classic **herd mentality**. The 76% who stopped SIPs during past crashes "
+                "were the herd. The 24% who didn't are the ones who built wealth.\n\n"
+            ),
+            "Recency Bias": (
+                "🧠 **What I notice:** You're assuming the current drop continues forever — "
+                "that's **recency bias**. Every Indian crash in 20 years reversed. "
+                "Average recovery: ~11 months.\n\n"
+            ),
+            "Panic / Emotional": (
+                "🧠 **What I notice:** This feels urgent and scary — your amygdala is firing. "
+                "That's a **panic response**, not a financial analysis. "
+                "Permanent decisions made in peak fear almost always turn out to be costly.\n\n"
+            ),
+        }
+        bias_preamble = ""
+        for b in biases:
+            if b in _bias_notes:
+                bias_preamble = _bias_notes[b]
+                break
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 1 — SIP / stop / pause / cancel
+        # ══════════════════════════════════════════════════════════════════
+        if any(w in msg for w in ["sip", "stop", "pause", "cancel", "mandate"]):
+            return (
+                f"{bias_preamble}"
+                f"**Don't stop your SIP — this is exactly the moment it works hardest for you.**\n\n"
+                f"Your {monthly_sip}/month is currently buying units at a *discount*. "
+                f"When the market falls, every rupee buys more units than it would in a rally. "
+                f"That's rupee-cost averaging — the core advantage of a SIP over a lump sum.\n\n"
+                f"📊 **The live numbers:** Panic score is **{panic_score}/100** ({risk_level}). "
+                f"This is most similar to the **{similar_crash}**, which recovered in "
+                f"**{recovery_months} months** and then gained **+{post_gain}%** from the bottom.\n\n"
+                f"💸 **What stopping costs you over {horizon_years} years:**\n"
+                f"- Continue SIP → **{hold_value}**\n"
+                f"- Stop SIP now → only **{stop_value}**\n"
+                f"- **Wealth destroyed: {wealth_lost}** — that's the price of this one decision.\n\n"
+                f"76% of investors stopped SIPs during similar crashes. "
+                f"The 24% who didn't built significantly more wealth. Which side do you want to be on?"
             )
 
-        msg_lower = user_message.lower()
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 2 — scared / fear / worried / panic / anxious
+        # (checked early — emotional state overrides generic market queries)
+        # ══════════════════════════════════════════════════════════════════
+        elif any(w in msg for w in ["scared", "fear", "worried", "worry", "panic", "anxious",
+                                     "nervous", "stress", "tense", "afraid", "terrif"]):
+            science_line = (
+                bias_preamble if bias_preamble else
+                "🧠 **The science:** Fear of loss is 2× stronger than pleasure of gain — "
+                "your brain is wired to overreact to downturns. That wiring kept our "
+                "ancestors alive, but it destroys investor wealth.\n\n"
+            )
+            return (
+                f"**I hear you — and your feelings make complete sense.**\n\n"
+                f"Watching your portfolio at {portfolio_value}{gain_str} during a "
+                f"**{risk_level}** panic environment is genuinely uncomfortable. "
+                f"That discomfort is real. But the feeling is telling you *to act*, "
+                f"not necessarily telling you *what action to take*.\n\n"
+                f"{science_line}"
+                f"📊 **What actually calms me:** The panic score is **{panic_score}/100**. "
+                f"During the **{similar_crash}** — a comparable moment of fear — markets recovered "
+                f"in just **{recovery_months} months**. Then went up **+{post_gain}%** more.\n\n"
+                f"💸 **The stakes:** Stopping your SIP of {monthly_sip} today would destroy "
+                f"**{wealth_lost}** in long-term wealth — not the market, *the fear response*.\n\n"
+                f"💡 **One ask:** Do nothing for 48 hours. Permanent decisions made in peak fear "
+                f"almost always turn out to be mistakes. What specifically is worrying you most?"
+            )
 
-        if any(w in msg_lower for w in ["stop sip", "cancel sip", "pause sip"]):
-            specific = (
-                "Stopping your SIP is the worst decision you can make right now. "
-                "When markets fall, your SIP buys MORE units at LOWER prices. "
-                "This is called rupee-cost averaging — and it's the single biggest "
-                "advantage retail investors have. You are literally buying at a discount."
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 3 — sell / exit / redeem / withdraw
+        # (checked before market so "should I sell in this market?" → sell route)
+        # ══════════════════════════════════════════════════════════════════
+        elif any(w in msg for w in ["sell", "exit", "redeem", "withdraw", "liquidate",
+                                     "pull out", "book", "square"]):
+            return (
+                f"{bias_preamble}"
+                f"**Let me show you exactly what selling today costs — in real rupees.**\n\n"
+                f"Your portfolio: **{portfolio_value}**{gain_str} (invested: {total_invested})\n\n"
+                f"💸 **Two futures over {horizon_years} years:**\n"
+                f"- **Hold & continue SIP** → **{hold_value}**\n"
+                f"- **Sell today** → you lock in today's loss permanently, then re-enter later "
+                f"at higher prices — likely reaching only **{stop_value}** or less\n"
+                f"- **Wealth destroyed by exiting: {wealth_lost}**\n\n"
+                f"📜 **Historical reality check:** During the **{similar_crash}**, investors who "
+                f"sold at the panic bottom and re-entered 6 months later paid **40–85% more** "
+                f"for the same units. The market recovered in {recovery_months} months anyway.\n\n"
+                f"Selling converts a *temporary* paper loss into a *permanent* real loss — "
+                f"and guarantees you miss the +{post_gain}% recovery that follows.\n\n"
+                f"⏳ **My ask:** Wait 48 hours before acting. What's driving the urgency to sell today specifically?"
             )
-        elif any(w in msg_lower for w in ["sell", "redeem", "exit", "withdraw"]):
-            specific = (
-                "Selling now means converting a paper loss into a permanent loss. "
-                "If you sell today and re-enter in 6 months, you'll almost certainly "
-                "buy back at higher prices. In the 2020 COVID crash, investors who "
-                "sold in March and re-entered in December paid 85% more for the same funds."
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 4 — recover / when / how long / timeline / bottom
+        # (before market so "when will market recover?" hits this, not market route)
+        # ══════════════════════════════════════════════════════════════════
+        elif any(w in msg for w in ["recover", "recovery", "when", "how long", "timeline",
+                                     "bottom", "turnaround", "rebound", "bounce"]):
+            return (
+                f"{bias_preamble}"
+                f"**The historical record on Indian market recoveries is actually very reassuring.**\n\n"
+                f"📜 **Every major Indian crash — every single one — recovered:**\n"
+                f"- COVID-19 (Mar 2020): 7 months → **+112%** from bottom\n"
+                f"- IL&FS / NBFC Crisis (2018): ~12 months to recovery\n"
+                f"- Demonetisation shock (2016): ~3 months to recovery\n"
+                f"- Global Financial Crisis (2008–09): ~18 months → **+180%**\n"
+                f"- **Average recovery across all 7 crashes: ~11 months**\n\n"
+                f"🎯 The current panic score is **{panic_score}/100**, most similar to "
+                f"**{similar_crash}** — which recovered in **{recovery_months} months** "
+                f"with **+{post_gain}%** gains from the bottom.\n\n"
+                f"⚠️ **The catch:** Nobody rings a bell at the bottom. "
+                f"By the time recovery feels certain, the best returns are already behind you. "
+                f"The investors who captured +{post_gain}% stayed invested *during* the fear.\n\n"
+                f"Your portfolio at {portfolio_value} is positioned to ride the full recovery — "
+                f"but only if you stay in. Keep the {monthly_sip} SIP running."
             )
-        elif any(w in msg_lower for w in ["increase", "more sip", "add", "invest more"]):
-            specific = (
-                "That's a brave and historically smart move! Investors who increased "
-                "their SIPs during crashes earned the highest returns. During COVID, "
-                "those who increased SIPs by 50% saw their portfolios double within "
-                "18 months. You're thinking like a long-term wealth builder."
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 5 — invest / buy / start / increase / opportunity
+        # ══════════════════════════════════════════════════════════════════
+        elif any(w in msg for w in ["invest", "buy", "start", "add", "increase", "opportunity", "lump"]):
+            return (
+                f"{bias_preamble}"
+                f"**You're asking exactly the right question — crashes are where wealth is made.**\n\n"
+                f"With a panic score of **{panic_score}/100 ({risk_level})**, we're in the kind of "
+                f"environment long-term investors dream about. Units are cheap. Fear is high. "
+                f"That's the classic buy signal.\n\n"
+                f"📜 **Historical proof from {similar_crash}:**\n"
+                f"- Recovery time: **{recovery_months} months**\n"
+                f"- Gain from bottom: **+{post_gain}%**\n"
+                f"- SIP continuers: built significantly more wealth than those who stopped\n\n"
+                f"📊 **Your three paths over {horizon_years} years:**\n"
+                f"- Stop SIP (panic): **{stop_value}**\n"
+                f"- Continue SIP (hold): **{hold_value}**\n"
+                f"- Increase SIP 50% (brave): **{brave_value}** ← the historically optimal move\n\n"
+                f"Your current portfolio of {portfolio_value} is the base. "
+                f"Every rupee you add here buys units at a discount to where they'll be in {recovery_months} months."
             )
+
+        # ══════════════════════════════════════════════════════════════════
+        # ROUTE 6 — market / crash / fall / drop (general market context)
+        # ══════════════════════════════════════════════════════════════════
+        elif any(w in msg for w in ["market", "crash", "fall", "drop", "nifty", "sensex", "correction", "bear"]):
+            vix_context = "elevated — signalling significant fear" if vix_high else "within manageable range"
+            return (
+                f"{bias_preamble}"
+                f"**Here's the real market picture — and some historical perspective.**\n\n"
+                f"📈 Nifty 50 is at **{nifty_str}**. India VIX (fear gauge) is **{vix_str}** — {vix_context}.\n"
+                f"🔴 Panic score: **{panic_score}/100 ({risk_level})**.\n\n"
+                f"This environment is most similar to the **{similar_crash}**. "
+                f"That crash felt catastrophic in the moment too.\n\n"
+                f"📜 **What happened next:** Markets recovered in **{recovery_months} months** "
+                f"and then delivered **+{post_gain}%** gains from the bottom. "
+                f"India has had 7 major crashes in 20 years. All 7 recovered. Zero exceptions.\n\n"
+                f"Your portfolio is at {portfolio_value}{gain_str}. The paper loss is real — "
+                f"but so is the eventual recovery. The question is whether you'll be invested when it arrives.\n\n"
+                f"Continuing your SIP during this period puts you in the 24% who win."
+            )
+
+        # ══════════════════════════════════════════════════════════════════
+        # DEFAULT — summary of key data + HOLD recommendation
+        # ══════════════════════════════════════════════════════════════════
         else:
-            specific = (
-                "Every crash in Indian market history has been followed by a full recovery. "
-                "The average recovery time is about 12 months. The investors who stay "
-                "calm and continue their plan always come out ahead."
+            return (
+                f"{bias_preamble}"
+                f"**Here's your full picture — and my recommendation.**\n\n"
+                f"📊 **Market right now:**\n"
+                f"- Panic score: **{panic_score}/100 ({risk_level})**\n"
+                f"- India VIX: {vix_str} | Nifty: {nifty_str}\n"
+                f"- Most similar crash: **{similar_crash}** (recovered in {recovery_months} months)\n\n"
+                f"💼 **Your portfolio:**\n"
+                f"- Invested: {total_invested} → Current: {portfolio_value}{gain_str}\n"
+                f"- Monthly SIP: {monthly_sip}\n\n"
+                f"📈 **Your {horizon_years}-year outcomes:**\n"
+                f"- Stop SIP (panic): {stop_value}\n"
+                f"- Continue SIP (hold): **{hold_value}** ← recommended\n"
+                f"- Increase SIP 50% (brave): **{brave_value}**\n"
+                f"- **Cost of stopping: {wealth_lost}**\n\n"
+                f"🎯 **Recommendation: HOLD and keep the SIP running.**\n"
+                f"The {similar_crash} scenario recovered in {recovery_months} months and then "
+                f"delivered +{post_gain}% from the bottom. Patience wins here.\n\n"
+                f"What specific concern can I help you think through?"
             )
-
-        reply = f"{bias_response}{specific}\n\nWhat else is worrying you? I'm here to help."
-        return reply
 
     def _fallback_message(self) -> str:
         """Absolute last-resort response."""
