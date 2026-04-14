@@ -217,20 +217,41 @@ def _build_gauge(score: int, risk: str) -> go.Figure:
             "threshold": {"line": {"color": color, "width": 3}, "thickness": 0.85, "value": score},
         },
     ))
-    fig.update_layout(height=280, margin=dict(t=30, b=0, l=40, r=40),
+    fig.update_layout(height=380, margin=dict(t=30, b=0, l=40, r=40),
                       paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                       font={"color": "#f0f0f0"})
     return fig
 
 
+def _panic_interpretation(score: int, risk: str) -> str:
+    if risk == "CRITICAL":
+        return ("Markets are in extreme fear. History shows these moments are often the best time to keep buying — "
+                "COVID bottom investors gained +112% in 18 months.")
+    if risk == "HIGH":
+        return ("Significant stress detected. Every past crisis of this magnitude recovered. "
+                "Stopping your SIP now locks in the loss and misses the recovery.")
+    if risk == "MEDIUM":
+        return ("Elevated volatility but not a crisis. Temporary corrections are a normal part of equity markets — "
+                "staying invested is the evidence-based response.")
+    return "Markets are calm. Your long-term plan is on track — no action needed."
+
+
 def _build_factor_bars(factors: list[dict]) -> go.Figure:
     names = [f["factor"] for f in reversed(factors)]
     impacts = [float(str(f.get("impact", "0")).replace("%", "")) for f in reversed(factors)]
+    n = len(names)
+    # Color by rank: highest-impact bar = red, tapering to amber
+    bar_colors = []
+    for i in range(n):
+        rank = n - 1 - i  # 0 = lowest impact in reversed list
+        t = rank / max(n - 1, 1)
+        # interpolate red (#ef4444) → amber (#f59e0b) as t goes 1→0
+        bar_colors.append(_COLORS["red"] if t > 0.6 else (_COLORS["orange"] if t > 0.3 else _COLORS["yellow"]))
     fig = go.Figure(go.Bar(
         x=impacts, y=names, orientation="h",
-        marker_color=[_COLORS["accent"]] * len(names), marker_line_width=0,
+        marker_color=bar_colors, marker_line_width=0,
         text=[f"{v}%" for v in impacts], textposition="outside",
-        textfont={"size": 12, "color": "#e2e8f0", "family": "Inter"},
+        textfont={"size": 12, "color": "#e2e8f0"},
     ))
     fig.update_layout(
         height=max(140, 50 * len(names)), margin=dict(t=5, b=5, l=10, r=60),
@@ -496,23 +517,29 @@ render_header()
 @_safe_section("Panic Score")
 def render_panic_score():
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-    g1, g2 = st.columns([1, 1])
+    g1, g2 = st.columns([6, 4])
     with g1:
         color = _risk_color(risk_lvl)
         pulse_cls = "pulse" if risk_lvl == "CRITICAL" else ""
+        glow_shadow = f"box-shadow: 0 0 32px {color}30, 0 0 8px {color}18;"
         st.markdown(f"""
-        <div class="glass-card gauge-wrapper">
+        <div class="glass-card gauge-wrapper" style="{glow_shadow}">
             <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase;
                         letter-spacing:1.4px; color:#94a3b8; margin-bottom:4px;">Market Panic Index</div>
         """, unsafe_allow_html=True)
         st.plotly_chart(_build_gauge(pan_score, risk_lvl), use_container_width=True, key="gauge")
         conf = coaching.get("confidence_level", 0.8)
         conf_str = f"{conf:.0%}" if isinstance(conf, (int, float)) else str(conf)
+        interpretation = _panic_interpretation(pan_score, risk_lvl)
         st.markdown(f"""
             <div class="risk-badge {pulse_cls}" style="background:{color}22; color:{color}; border:1px solid {color}55;">
                 {risk_lvl}</div>
             <div style="font-size:0.75rem; color:#94a3b8; margin-top:12px; text-align:center;">
                 {crisis.get("recommendation", "HOLD")} recommended &nbsp;·&nbsp; Confidence {conf_str}</div>
+            <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.6; margin-top:16px;
+                        padding:14px 18px; background:rgba(59,130,246,0.06);
+                        border-left:3px solid {color}; border-radius:0 8px 8px 0;">
+                {interpretation}</div>
         </div>""", unsafe_allow_html=True)
 
     with g2:
