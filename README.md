@@ -251,7 +251,7 @@ The behavioral gap — the difference between what a rational investor *should* 
 ### 1. Clone
 
 ```bash
-git clone https://github.com/your-org/panicguard-ai.git
+git clone https://github.com/DeewakarBora/panicguard-ai.git
 cd panicguard-ai
 ```
 

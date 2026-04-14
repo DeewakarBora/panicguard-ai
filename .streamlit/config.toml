@@ -3,10 +3,10 @@
 
 [theme]
 base = "dark"
-primaryColor = "#8b5cf6"
-backgroundColor = "#0f0c29"
-secondaryBackgroundColor = "#1a1633"
-textColor = "#f0f0f0"
+primaryColor = "#3b82f6"
+backgroundColor = "#0a1628"
+secondaryBackgroundColor = "#111d35"
+textColor = "#f1f5f9"
 font = "sans serif"
 
 [server]
