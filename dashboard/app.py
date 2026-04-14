@@ -790,8 +790,20 @@ def render_coach():
 
         # ── Chat input lives here, inside the coach section ────────────
         st.markdown("""<div class="ai-coach-card" style="margin-top:4px;">
-            <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:8px;">💬 Ask the AI Coach</div>
+            <div style="font-size:0.88rem; font-weight:600; color:#f1f5f9; margin-bottom:4px;">💬 Ask the AI Coach</div>
+            <div style="font-size:0.78rem; color:#64748b; margin-bottom:12px;">
+                Ask anything about your portfolio, SIPs, or the current market situation.</div>
         """, unsafe_allow_html=True)
+        if not st.session_state.chat_history:
+            st.markdown("""<div style="font-size:0.82rem; color:#475569; font-style:italic; padding:10px 0;">
+                e.g. "Should I stop my SIP?" · "How long will this crash last?" · "What would you do?"
+            </div>""", unsafe_allow_html=True)
+        for msg_item in st.session_state.chat_history:
+            if msg_item["role"] == "user":
+                st.markdown(f'<div class="chat-user">🙋 {msg_item["content"]}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="chat-ai">🛡️ {msg_item["content"]}</div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
         user_input = st.chat_input("Ask anything — e.g., 'Should I stop my SIP?'")
         if user_input:
             st.session_state.chat_history.append({"role": "user", "content": user_input})
@@ -802,12 +814,7 @@ def render_coach():
                 reply = ("Every crash in Indian market history has been followed by recovery. "
                          "Continue your SIP — you are buying at a discount. What specifically is worrying you?")
             st.session_state.chat_history.append({"role": "assistant", "content": reply})
-        for msg_item in st.session_state.chat_history:
-            if msg_item["role"] == "user":
-                st.markdown(f'<div class="chat-user">🙋 {msg_item["content"]}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="chat-ai">🛡️ {msg_item["content"]}</div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.rerun()
 
     with co2:
         biases = coaching.get("detected_biases", [])
